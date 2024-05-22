@@ -1,33 +1,52 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField
+} from "@mui/material";
 import { DatabaseDescriptor } from "../../App";
 import { Link } from "react-router-dom";
 import { createDatabase } from "../../api/api";
 
 const columns: GridColDef[] = [
   {
-    field: 'dbName', headerName: 'Database Name', width: 130, renderCell: (params) => (
+    field: 'name', headerName: 'Database Name', width: 130, renderCell: (params) => (
       <Link to={`/database/${params.row.id}`} style={{ textDecoration: 'none', color: 'blue' }}>
         {params.value}
       </Link>
     )
   },
   { field: 'username', headerName: 'Username', width: 130 },
-  { field: 'dbType', headerName: 'Database Type', width: 130 }
+  { field: 'type', headerName: 'Database Type', width: 130 },
+  {
+    field: 'loading', headerName: 'Status', width: 100, renderCell: (params) => (
+      params.value ? <CircularProgress size={24} /> : 'Added'
+    )
+  }
 ];
 
 interface IProps {
-  databaseList?: DatabaseDescriptor[];
+  databaseList: DatabaseDescriptor[];
 }
 
 export default function DataTable({ databaseList }: IProps) {
+  console.log(databaseList);
+
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  function addDbClick() {
+  const [rows, setRows] = useState<DatabaseDescriptor[]>(databaseList);
 
-  }
+  useEffect(() => setRows(databaseList), [databaseList]);
 
   function handleClose() {
     setDialogOpen(false);
@@ -40,14 +59,7 @@ export default function DataTable({ databaseList }: IProps) {
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
-        rows={databaseList === undefined ? [] : databaseList?.map(value => {
-          return {
-            id: value.id,
-            dbName: value.name,
-            username: value.username,
-            dbType: value.type
-          };
-        })}
+        rows={rows}
         columns={columns}
         initialState={{
           pagination: {
@@ -93,11 +105,28 @@ export default function DataTable({ databaseList }: IProps) {
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries((
                                                     formData as any).entries());
-              const email = formJson.name;
 
-              createDatabase(formJson as DatabaseDescriptor).then((response) => {
-                console.log(response.data);
+              setRows(prevState => {
+                return [...prevState, {
+                  id: Math.random().toString(36).substr(2, 9),
+                  loading: true,
+                  name: formJson.name,
+                  username: formJson.username,
+                  type: formJson.type,
+                  url: formJson.url,
+                  password: formJson.password
+                } as DatabaseDescriptor];
               });
+
+              setTimeout(()=>{
+                createDatabase(formJson as DatabaseDescriptor).then((response) => {
+                  setRows(prevRows => prevRows?.map(row => row.id === Math.random().toString(36).substr(2, 9) ? {
+                    ...row,
+                    id: response.data.id,
+                    loading: false
+                  } : row));
+                });
+              }, 2000)
 
               handleClose();
             }
@@ -149,18 +178,21 @@ export default function DataTable({ databaseList }: IProps) {
               fullWidth
               variant="standard"
             />
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="type"
-              name="type"
-              label="Type(Snowflake,Trino,MySQL)"
-              type="text" //TODO:Input
-              fullWidth
-              variant="standard"
-            />
-          </DialogContent>
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="type-label">Database Type</InputLabel>
+              <Select
+                labelId="type-label"
+                id="type"
+                name="type"
+                defaultValue="MySQL"
+                variant="standard"
+                fullWidth
+              >
+                <MenuItem value="Snowflake">Snowflake</MenuItem>
+                <MenuItem value="Trino">Trino</MenuItem>
+                <MenuItem value="MySQL">MySQL</MenuItem>
+              </Select>
+            </FormControl> </DialogContent>
           <DialogActions>
             <Button onClick={() => handleClose()}>Cancel</Button>
             <Button type="submit">Subscribe</Button>

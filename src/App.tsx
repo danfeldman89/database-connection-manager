@@ -27,6 +27,7 @@ export type DatabaseType = 'snowflake' | 'trino' | 'mySql';
 
 export interface DatabaseDescriptor {
   id?: string,
+  loading?: boolean,
   name: string,
   url: string,
   username: string,
@@ -36,7 +37,7 @@ export interface DatabaseDescriptor {
 
 const App: FunctionComponent<IProps> = () => {
   const [serverStatus, setServerStatus] = useState<status>('LOADING');
-  const [databaseList, setDatabaseList] = useState<DatabaseDescriptor[] | undefined>(undefined);
+  const [databaseList, setDatabaseList] = useState<DatabaseDescriptor[]>([]);
 
   const { statusMessage, statusColor } = useMemo(() => statusInfo[serverStatus], [serverStatus]);
 
