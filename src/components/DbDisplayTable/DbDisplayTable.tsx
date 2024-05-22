@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { Button, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import { createDatabase, deleteDatabases, fetchDatabases } from "../../api/api";
@@ -43,6 +43,7 @@ export default function DataTable() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [rows, setRows] = useState<DatabaseDescriptor[]>([]);
   const [checkboxedIds, setCheckboxedIds] = useState<string[]>([]);
+  const [isDeletingRowsInProgress, setIsDeletingRowsInProgress] = useState(false);
 
   const [serverStatus, setServerStatus] = useState<status>('LOADING');
 
@@ -59,6 +60,7 @@ export default function DataTable() {
   }, []);
 
   function handleDelete() {
+    setIsDeletingRowsInProgress(true);
     let rowsToBeDeleted = rows.filter(row => checkboxedIds.includes(row.id!));
     rowsToBeDeleted.forEach(value => value.loading = true);
 
@@ -69,8 +71,17 @@ export default function DataTable() {
         let filtered = rows.filter(defaultRow => !response.some(responseDeletedIds => responseDeletedIds.data.id === defaultRow.id));
 
         setRows(filtered);
+        setIsDeletingRowsInProgress(false);
       });
     }, 1000);
+  }
+
+  function getRowClassName(params: GridRowParams) {
+    if (params.row.loading === true) {
+      return 'disabled-row';
+    }
+
+    return '';
   }
 
   return (
@@ -88,6 +99,7 @@ export default function DataTable() {
             paginationModel: { page: 0, pageSize: 10 }
           }
         }}
+        getRowClassName={getRowClassName}
         checkboxSelection
       />
 
@@ -95,7 +107,7 @@ export default function DataTable() {
         variant="contained"
         color="secondary"
         onClick={handleDelete}
-        disabled={checkboxedIds.length === 0}
+        disabled={checkboxedIds.length === 0 || isDeletingRowsInProgress}
         className={`${styles.button} ${styles['delete-button']}`}
         startIcon={<DeleteIcon />}
       />

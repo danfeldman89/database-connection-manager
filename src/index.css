@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.disabled-row {
+  opacity: 0.5; /* Reduce opacity to visually indicate the row is disabled */
+  pointer-events: none; /* Disable pointer events to prevent interaction with the row */
+}
