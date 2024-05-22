@@ -60,7 +60,7 @@ const App: FunctionComponent<IProps> = () => {
         {statusMessage}
       </h5>
 
-      <DbDisplayTable databaseList={databaseList}/>
+      <DbDisplayTable databaseList={databaseList} />
     </div>
   );
 };

@@ -3,9 +3,14 @@ import { useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { DatabaseDescriptor } from "../../App";
+import { Link } from "react-router-dom";
 
 const columns: GridColDef[] = [
-  { field: 'dbName', headerName: 'Database Name', width: 70 },
+  { field: 'dbName', headerName: 'Database Name', width: 130, renderCell: (params) => (
+      <Link to={`/database/${params.row.id}`} style={{ textDecoration: 'none', color: 'blue' }}>
+        {params.value}
+      </Link>
+    ), },
   { field: 'username', headerName: 'Username', width: 130 },
   { field: 'dbType', headerName: 'Database Type', width: 130 }
 ];
@@ -72,7 +77,10 @@ export default function DataTable({ databaseList }: IProps) {
       </Button>
 
       {/*<AddDbDialog open={dialogOpen} />*/}
-      <form onSubmit={() => submitForm()}>
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        submitForm();
+      }}>
         <Dialog
           open={dialogOpen}
           onClose={handleClose}
@@ -83,7 +91,7 @@ export default function DataTable({ databaseList }: IProps) {
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries((
                                                     formData as any).entries());
-              const email = formJson.email;
+              const email = formJson.name;
               console.log(email);
               handleClose();
             }
