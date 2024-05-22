@@ -6,11 +6,13 @@ import { DatabaseDescriptor } from "../../App";
 import { Link } from "react-router-dom";
 
 const columns: GridColDef[] = [
-  { field: 'dbName', headerName: 'Database Name', width: 130, renderCell: (params) => (
+  {
+    field: 'dbName', headerName: 'Database Name', width: 130, renderCell: (params) => (
       <Link to={`/database/${params.row.id}`} style={{ textDecoration: 'none', color: 'blue' }}>
         {params.value}
       </Link>
-    ), },
+    )
+  },
   { field: 'username', headerName: 'Username', width: 130 },
   { field: 'dbType', headerName: 'Database Type', width: 130 }
 ];

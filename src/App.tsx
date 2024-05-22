@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import DbDisplayTable from './components/DbDisplayTable/DbDisplayTable';
+import { fetchDatabases } from "./api/api";
 
 interface IProps {
 }
@@ -40,9 +41,7 @@ const App: FunctionComponent<IProps> = () => {
   const { statusMessage, statusColor } = useMemo(() => statusInfo[serverStatus], [serverStatus]);
 
   useEffect(() => {
-    const fakeServerUrl = 'http://localhost:4000/databases';
-
-    axios.get(fakeServerUrl)
+    fetchDatabases()
          .then((response) => {
            setServerStatus('WORKING');
            let data = response.data;
