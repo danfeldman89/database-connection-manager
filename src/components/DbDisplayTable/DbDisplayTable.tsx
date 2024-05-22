@@ -4,6 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { DatabaseDescriptor } from "../../App";
 import { Link } from "react-router-dom";
+import { createDatabase } from "../../api/api";
 
 const columns: GridColDef[] = [
   {
@@ -53,7 +54,6 @@ export default function DataTable({ databaseList }: IProps) {
             paginationModel: { page: 0, pageSize: 5 }
           }
         }}
-        pageSizeOptions={[5, 10]}
         checkboxSelection
         slots={{}} // TODO: impl footer here
       />
@@ -94,7 +94,11 @@ export default function DataTable({ databaseList }: IProps) {
               const formJson = Object.fromEntries((
                                                     formData as any).entries());
               const email = formJson.name;
-              console.log(email);
+
+              createDatabase(formJson as DatabaseDescriptor).then((response) => {
+                console.log(response.data);
+              });
+
               handleClose();
             }
           }}
@@ -106,7 +110,7 @@ export default function DataTable({ databaseList }: IProps) {
               required
               margin="dense"
               id="name"
-              name="database_name"
+              name="name"
               label="Database Name"
               type="text"
               fullWidth
@@ -127,9 +131,9 @@ export default function DataTable({ databaseList }: IProps) {
               autoFocus
               required
               margin="dense"
-              id="name"
-              name="name"
-              label="Name"
+              id="username"
+              name="username"
+              label="Username"
               type="text"
               fullWidth
               variant="standard"
@@ -138,8 +142,8 @@ export default function DataTable({ databaseList }: IProps) {
               autoFocus
               required
               margin="dense"
-              id="user-password"
-              name="user-password"
+              id="password"
+              name="password"
               label="User Password"
               type="text"
               fullWidth
@@ -152,7 +156,7 @@ export default function DataTable({ databaseList }: IProps) {
               id="type"
               name="type"
               label="Type(Snowflake,Trino,MySQL)"
-              type="email" //TODO:Input
+              type="text" //TODO:Input
               fullWidth
               variant="standard"
             />

@@ -26,7 +26,7 @@ const statusInfo = {
 export type DatabaseType = 'snowflake' | 'trino' | 'mySql';
 
 export interface DatabaseDescriptor {
-  id: string,
+  id?: string,
   name: string,
   url: string,
   username: string,
