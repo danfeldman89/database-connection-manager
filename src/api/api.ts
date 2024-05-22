@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DatabaseDescriptor } from "../App";
+import { DatabaseDescriptor } from "../components/DbDisplayTable/DbDisplayTable";
 
 export function fetchDatabases() {
   const fakeServerUrl = 'http://localhost:4000/databases';

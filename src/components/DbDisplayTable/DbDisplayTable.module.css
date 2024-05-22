@@ -2,21 +2,26 @@
     display: grid;
 
     grid-template-columns: 8fr 1fr;
-    grid-template-rows: 1fr 1fr 20fr;
+    grid-template-rows: 1fr 1fr 20fr 1fr;
 
     grid-template-areas: 'table add-button'
     'table delete-button'
-    'table empty';
+    'table empty'
+    'server-message empty';
 
     justify-content: center;
     align-items: center;
 
-    margin-right: 2rem;
+    margin: 2rem;
+}
+
+.server-message {
+    grid-area: server-message;
 }
 
 .table {
     grid-area: table;
-    margin: 2rem;
+    margin: 0 2rem;
 }
 
 .add-button {
@@ -25,9 +30,4 @@
 
 .delete-button {
     grid-area: delete-button
-}
-
-.button {
-    /*margin: 2rem;*/
-    /*margin-right: 5rem;*/
 }

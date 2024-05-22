@@ -14,12 +14,12 @@ import {
   Select,
   TextField
 } from "@mui/material";
-import { DatabaseDescriptor } from "../../App";
 import { Link } from "react-router-dom";
-import { createDatabase, deleteDatabases } from "../../api/api";
+import { createDatabase, deleteDatabases, fetchDatabases } from "../../api/api";
 import styles from './DbDisplayTable.module.css';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import BackendConnectionStatus, { status } from "../BackendConnectionStatus/BackendConnectionStatus";
 
 const columns: GridColDef[] = [
   {
@@ -38,22 +38,40 @@ const columns: GridColDef[] = [
   }
 ];
 
-interface IProps {
+export interface IProps {
   databaseList: DatabaseDescriptor[];
 }
 
-export default function DataTable({ databaseList }: IProps) {
-  console.log(databaseList);
+export type DatabaseType = 'snowflake' | 'trino' | 'mySql';
 
+export interface DatabaseDescriptor {
+  id?: string,
+  loading?: boolean,
+  name: string,
+  url: string,
+  username: string,
+  password: string,
+  type: DatabaseType,
+}
+
+export default function DataTable() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [rows, setRows] = useState<DatabaseDescriptor[]>(databaseList);
+  const [rows, setRows] = useState<DatabaseDescriptor[]>([]);
   const [checkboxedIds, setCheckboxedIds] = useState<string[]>([]);
 
-  useEffect(() => setRows(databaseList), [databaseList]);
+  const [serverStatus, setServerStatus] = useState<status>('LOADING');
 
-  function handleClose() {
-    setDialogOpen(false);
-  }
+  useEffect(() => {
+    fetchDatabases()
+      .then((response) => {
+        setServerStatus('WORKING');
+        let data = response.data;
+        setRows(data);
+      })
+      .catch(() => {
+        setServerStatus('NOT WORKING');
+      });
+  }, []);
 
   function handleDelete() {
     let rowsToBeDeleted = rows.filter(row => checkboxedIds.includes(row.id!));
@@ -71,7 +89,8 @@ export default function DataTable({ databaseList }: IProps) {
   }
 
   return (
-    <div style={{ height: 1000, width: '100%' }} className={styles.root}>
+    <div style={{ height: 1000, flexDirection: 'column' }} className={styles.root}>
+
       <DataGrid
         className={styles.table}
         onRowSelectionModelChange={(checkboxSelectedRows) => {
@@ -85,7 +104,6 @@ export default function DataTable({ databaseList }: IProps) {
           }
         }}
         checkboxSelection
-        slots={{}} // TODO: impl footer here
       />
 
       <Button
@@ -100,15 +118,19 @@ export default function DataTable({ databaseList }: IProps) {
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => openDialog()}
+        onClick={() => setDialogOpen(true)}
         className={`${styles.button} ${styles['add-button']}`}
         startIcon={<AddIcon />}
       />
 
+      <div className={styles['server-message']}>
+        <BackendConnectionStatus status={serverStatus} />
+      </div>
+
       <form onSubmit={(event) => event.preventDefault()}>
         <Dialog
           open={dialogOpen}
-          onClose={handleClose}
+          onClose={() => setDialogOpen(false)}
           PaperProps={{
             component: 'form',
             onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -139,7 +161,7 @@ export default function DataTable({ databaseList }: IProps) {
                 });
               }, 1000);
 
-              handleClose();
+              setDialogOpen(false);
             }
           }}
         >
@@ -205,15 +227,11 @@ export default function DataTable({ databaseList }: IProps) {
               </Select>
             </FormControl> </DialogContent>
           <DialogActions>
-            <Button onClick={() => handleClose()}>Cancel</Button>
+            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
             <Button type="submit">Add</Button>
           </DialogActions>
         </Dialog>
       </form>
     </div>
   );
-
-  function openDialog() {
-    setDialogOpen(true);
-  }
 }

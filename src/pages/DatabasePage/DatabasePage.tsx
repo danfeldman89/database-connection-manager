@@ -5,28 +5,18 @@ import { fetchDatabaseById } from "../../api/api";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import { DatabaseDescriptor } from "../../App";
+import { DatabaseDescriptor } from "../../components/DbDisplayTable/DbDisplayTable";
 
-interface DatabasePageProps {
 
-}
-
-function DatabasePage({ /* props */ }: DatabasePageProps) {
+function DatabasePage() {
   const { dbId } = useParams<{ dbId: string }>();
   const [databaseData, setDatabaseData] = React.useState<DatabaseDescriptor | undefined>(undefined);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchDatabaseById(dbId!)
-      .then((response) => {
-        console.log(response);
-        setDatabaseData(response.data);
-      });
+      .then((response) => setDatabaseData(response.data));
   }, [dbId]);
-
-  const handleBackClick = () => {
-    navigate('/');
-  };
 
   return (
     <div className={styles.root}>
@@ -55,7 +45,7 @@ function DatabasePage({ /* props */ }: DatabasePageProps) {
       <Button
         variant="contained"
         startIcon={<ArrowBackIcon />}
-        onClick={handleBackClick}>
+        onClick={() => navigate('/')}>
         Back
       </Button>
     </div>

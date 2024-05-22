@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from "./App";
 import DatabasePage from "./pages/DatabasePage/DatabasePage";
+import DbDisplayTable from './components/DbDisplayTable/DbDisplayTable';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,13 +12,13 @@ const root = ReactDOM.createRoot(
 const router = createBrowserRouter([
                                      {
                                        path: '/',
-                                       element: <App />,
+                                       element: <DbDisplayTable />,
                                        errorElement: 'not found'
                                      },
                                      {
                                        path: '/database/:dbId',
-                                       element: <DatabasePage />
-                                       // errorElement: <DbPageNotFound /> // TODO: Impl
+                                       element: <DatabasePage />,
+                                       errorElement: 'Database page not found'
                                      }
                                    ]);
 
