@@ -16,7 +16,10 @@ import {
 } from "@mui/material";
 import { DatabaseDescriptor } from "../../App";
 import { Link } from "react-router-dom";
-import { createDatabase } from "../../api/api";
+import { createDatabase, deleteDatabases } from "../../api/api";
+import styles from './DbDisplayTable.module.css';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 const columns: GridColDef[] = [
   {
@@ -43,8 +46,8 @@ export default function DataTable({ databaseList }: IProps) {
   console.log(databaseList);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-
   const [rows, setRows] = useState<DatabaseDescriptor[]>(databaseList);
+  const [checkboxedIds, setCheckboxedIds] = useState<string[]>([]);
 
   useEffect(() => setRows(databaseList), [databaseList]);
 
@@ -52,18 +55,33 @@ export default function DataTable({ databaseList }: IProps) {
     setDialogOpen(false);
   }
 
-  function submitForm() {
-    console.log('form submitted');
+  function handleDelete() {
+    let rowsToBeDeleted = rows.filter(row => checkboxedIds.includes(row.id!));
+    rowsToBeDeleted.forEach(value => value.loading = true);
+
+    setRows([...rows]);
+
+    setTimeout(() => {
+      deleteDatabases(rowsToBeDeleted).then((response) => {
+        let filtered = rows.filter(defaultRow => !response.some(responseDeletedIds => responseDeletedIds.data.id === defaultRow.id));
+
+        setRows(filtered);
+      });
+    }, 1000);
   }
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 1000, width: '100%' }} className={styles.root}>
       <DataGrid
+        className={styles.table}
+        onRowSelectionModelChange={(checkboxSelectedRows) => {
+          setCheckboxedIds(checkboxSelectedRows as string[]);
+        }}
         rows={rows}
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 }
+            paginationModel: { page: 0, pageSize: 10 }
           }
         }}
         checkboxSelection
@@ -73,28 +91,21 @@ export default function DataTable({ databaseList }: IProps) {
       <Button
         variant="contained"
         color="secondary"
-        // onClick={handleDelete}
-        // disabled={selectedRows.length === 0}
-        style={{ marginTop: 20 }}
-      >
-        Delete Selected
-      </Button>
+        onClick={handleDelete}
+        disabled={checkboxedIds.length === 0}
+        className={`${styles.button} ${styles['delete-button']}`}
+        startIcon={<DeleteIcon />}
+      />
 
       <Button
         variant="contained"
         color="secondary"
-        // disabled={selectedRows.length === 0}
-        style={{ marginTop: 20 }}
         onClick={() => openDialog()}
-      >
-        Add Database
-      </Button>
+        className={`${styles.button} ${styles['add-button']}`}
+        startIcon={<AddIcon />}
+      />
 
-      {/*<AddDbDialog open={dialogOpen} />*/}
-      <form onSubmit={(event) => {
-        event.preventDefault();
-        submitForm();
-      }}>
+      <form onSubmit={(event) => event.preventDefault()}>
         <Dialog
           open={dialogOpen}
           onClose={handleClose}
@@ -105,10 +116,10 @@ export default function DataTable({ databaseList }: IProps) {
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries((
                                                     formData as any).entries());
-
+              const tempId = Math.random().toString(36).substr(2, 9);
               setRows(prevState => {
                 return [...prevState, {
-                  id: Math.random().toString(36).substr(2, 9),
+                  id: tempId,
                   loading: true,
                   name: formJson.name,
                   username: formJson.username,
@@ -118,15 +129,15 @@ export default function DataTable({ databaseList }: IProps) {
                 } as DatabaseDescriptor];
               });
 
-              setTimeout(()=>{
+              setTimeout(() => {
                 createDatabase(formJson as DatabaseDescriptor).then((response) => {
-                  setRows(prevRows => prevRows?.map(row => row.id === Math.random().toString(36).substr(2, 9) ? {
+                  setRows(prevRows => prevRows?.map(row => row.id === tempId ? {
                     ...row,
                     id: response.data.id,
                     loading: false
                   } : row));
                 });
-              }, 2000)
+              }, 1000);
 
               handleClose();
             }
@@ -195,7 +206,7 @@ export default function DataTable({ databaseList }: IProps) {
             </FormControl> </DialogContent>
           <DialogActions>
             <Button onClick={() => handleClose()}>Cancel</Button>
-            <Button type="submit">Subscribe</Button>
+            <Button type="submit">Add</Button>
           </DialogActions>
         </Dialog>
       </form>

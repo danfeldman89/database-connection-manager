@@ -55,7 +55,7 @@ const App: FunctionComponent<IProps> = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection: 'column', margin: '2rem'}}>
       <h5 style={{ color: statusColor }}>
         {statusMessage}
       </h5>

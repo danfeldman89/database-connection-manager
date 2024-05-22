@@ -1,3 +1,33 @@
 .root {
+    display: grid;
 
+    grid-template-columns: 8fr 1fr;
+    grid-template-rows: 1fr 1fr 20fr;
+
+    grid-template-areas: 'table add-button'
+    'table delete-button'
+    'table empty';
+
+    justify-content: center;
+    align-items: center;
+
+    margin-right: 2rem;
+}
+
+.table {
+    grid-area: table;
+    margin: 2rem;
+}
+
+.add-button {
+    grid-area: add-button
+}
+
+.delete-button {
+    grid-area: delete-button
+}
+
+.button {
+    /*margin: 2rem;*/
+    /*margin-right: 5rem;*/
 }

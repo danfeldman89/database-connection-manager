@@ -1,3 +1,11 @@
 .root {
-
+    border: none;
+    margin: 2rem;
 }
+
+.card {
+    border: none;
+    /*background-color: red;*/
+    margin: 1rem 0;
+}
+

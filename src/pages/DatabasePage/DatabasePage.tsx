@@ -31,7 +31,7 @@ function DatabasePage({ /* props */ }: DatabasePageProps) {
   return (
     <div className={styles.root}>
       {databaseData && (
-        <Card sx={{ minWidth: 275 }}>
+        <Card sx={{ minWidth: 275 }} className={styles.card}>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} variant="body2" color="text.secondary" component="p">
               Name: {databaseData.name}

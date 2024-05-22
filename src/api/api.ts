@@ -18,3 +18,11 @@ export function createDatabase(databaseDescriptor: DatabaseDescriptor) {
 
   return axios.post(fakeServerUrl, databaseDescriptor);
 }
+
+export function deleteDatabases(databaseDescriptors: DatabaseDescriptor[]) {
+  const fakeServerUrl = 'http://localhost:4000/databases';
+
+  return Promise.all(databaseDescriptors.map(descriptor =>
+                                               axios.delete(`${fakeServerUrl}/${descriptor.id}`)
+  ));
+}
