@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styles from './DialogComponent.module.css';
 import {
   Button,
   Dialog,
@@ -24,7 +23,7 @@ function DialogComponent({ isOpen, onSubmit, onClose }: DialogComponentProps) {
   useEffect(() => setOpen(isOpen), [isOpen]);
 
   return (
-    <div className={styles.root}>
+    <div>
       <form onSubmit={(event) => event.preventDefault()}>
         <Dialog
           open={open}
@@ -64,7 +63,7 @@ function DialogComponent({ isOpen, onSubmit, onClose }: DialogComponentProps) {
               margin="dense"
               id="username"
               name="username"
-              label="Username"
+              label="User Name"
               type="text"
               fullWidth
               variant="standard"
@@ -94,7 +93,9 @@ function DialogComponent({ isOpen, onSubmit, onClose }: DialogComponentProps) {
                 <MenuItem value="Trino">Trino</MenuItem>
                 <MenuItem value="MySQL">MySQL</MenuItem>
               </Select>
-            </FormControl> </DialogContent>
+            </FormControl>
+          </DialogContent>
+
           <DialogActions>
             <Button onClick={() => onClose()}>Cancel</Button>
             <Button type="submit">Add</Button>

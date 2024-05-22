@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './BackendConnectionStatus.module.css';
 
 interface BackendConnectionStatusProps {
   status: status;
@@ -26,8 +25,8 @@ function BackendConnectionStatus({ status }: BackendConnectionStatusProps) {
   let statusInfoElement = statusInfo[status];
 
   return (
-    <div className={styles.root}>
-      <h5 style={{ color: statusInfoElement.statusColor }} className={styles['server-message']}>
+    <div>
+      <h5 style={{ color: statusInfoElement.statusColor }} className='server-message'>
         {statusInfoElement.statusMessage}
       </h5>
     </div>

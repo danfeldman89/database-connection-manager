@@ -5,8 +5,7 @@ import { fetchDatabaseById } from "../../api/api";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import { DatabaseDescriptor } from "../../components/DbDisplayTable/DbDisplayTable";
-
+import { DatabaseDescriptor } from "../DatabasesDisplay/DatabasesDisplay";
 
 function DatabasePage() {
   const { dbId } = useParams<{ dbId: string }>();
@@ -15,7 +14,8 @@ function DatabasePage() {
 
   useEffect(() => {
     fetchDatabaseById(dbId!)
-      .then((response) => setDatabaseData(response.data));
+      .then((response) => setDatabaseData(response.data))
+      .catch((error) => console.log(error));
   }, [dbId]);
 
   return (
@@ -27,7 +27,7 @@ function DatabasePage() {
               Name: {databaseData.name}
             </Typography>
             <Typography sx={{ fontSize: 14 }} variant="body2" color="text.secondary" component="p">
-              Username: {databaseData.username}
+              User Name: {databaseData.username}
             </Typography>
             <Typography sx={{ fontSize: 14 }} variant="body2" color="text.secondary" component="p">
               Database Type: {databaseData.type}
@@ -40,6 +40,10 @@ function DatabasePage() {
             </Typography>
           </CardContent>
         </Card>
+      )}
+
+      {!databaseData && (
+        <div className={styles['error-message']}>Database Id Error</div>
       )}
 
       <Button
